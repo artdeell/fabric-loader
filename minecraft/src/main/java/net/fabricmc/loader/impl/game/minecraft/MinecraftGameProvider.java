@@ -176,6 +176,10 @@ public class MinecraftGameProvider implements GameProvider {
 				lookupPaths = new ArrayList<>();
 				lookupPaths.add(path);
 				lookupPaths.addAll(launcher.getClassPath());
+
+				// Load all libraries in production dedicated server to allow for external log4j
+				// TODO revisit after #630 is merged and fix upstream, possibly by making FabricLauncher#getClassPath return actual classpath including that from META-INF?
+				Files.walk(Paths.get("libraries")).filter(p -> Files.isRegularFile(p) && p.toString().endsWith(".jar")).forEach(lookupPaths::add);
 			} else {
 				lookupPaths = launcher.getClassPath();
 			}
